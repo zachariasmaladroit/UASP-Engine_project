@@ -1,0 +1,132 @@
+#!/sbin/sh
+#
+# ARISE Sound Systems™ @XDA Developers
+#
+# Deuteronomy™ Arkamys™ Audio AROMA module
+#
+# www.arisesound.com
+
+OUTFD=/proc/self/fd/$2
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+if [ ! -d "$SYS/vendor" ] || [ -L "$SYS/vendor" ]; then
+  safe_mount /vendor
+  VEN=/vendor
+elif [ -d "$SYS/vendor" ] || [ -L "/vendor" ]; then
+  VEN=$SYS/vendor
+fi
+
+if [ -e "$VEN/build.prop" ] && [ ! -e "$SYS/build.prop" ]; then
+  BUILDPROP=$VEN/build.prop
+elif [ -e "$SYS/build.prop" ] && [ ! -e "$VEN/build.prop" ]; then
+  BUILDPROP=$SYS/build.prop
+elif [ -e "$SYS/build.prop" ] && [ -e "$VEN/build.prop" ]; then
+  if [ $(wc -c < "$SYS/build.prop") -ge $(wc -c < "$VEN/build.prop") ]; then
+    BUILDPROP=$SYS/build.prop
+  else
+    BUILDPROP=$VEN/build.prop
+  fi
+fi
+
+set_perm() {
+ if [ -e $1 ]; then
+  chown $2:$3 $1 || exit 1
+  chmod $4 $1 || exit 1
+  if [ "$5" ]; then
+  chcon $5 $1 2>/dev/null
+  else
+  chcon 'u:object_r:system_file:s0' $1 2>/dev/null
+  fi
+ fi
+}
+
+set_perm_recursive() {
+  find $1 -type d 2>/dev/null | while read dir; do
+    set_perm $dir $2 $3 $4 $6
+  done
+  find $1 -type f 2>/dev/null | while read file; do
+    set_perm $file $2 $3 $5 $6
+  done
+}
+
+MOD=arkamys
+APP=$SYS/app
+ETC=$SYS/etc
+JAR=$SYS/framework/com.arkamysaudio.jar
+XML=$SYS/etc/permissions/com.arkamysaudio.xml
+VETC=$VEN/etc
+DEUTFX=$SYS/lib/soundfx/deuteronomy
+ARK=ArkamysAudio
+ARKAPK=ArkamysAudio.apk
+ARKLIB=libarkamys.so
+AEC=audio_effects.conf
+HTC=htc_audio_effects.conf
+AEV=audio_effects_vendor.conf
+AOE=audio_offload_effects.conf
+API=$(cat $BUILDPROP | grep "ro.build.version.sdk=" | dd bs=1 skip=21 count=2)
+SP=set_perm
+SPR=set_perm_recursive
+
+cd /tmp
+
+cp -Rf $MOD/system/* $SYS
+$SP $DEUTFX/$ARKLIB 0 0 0644
+$SP $JAR 0 0 0644
+$SP $XML 0 0 0644
+
+if [ "$API" -ge "21" ]; then
+
+  mkdir -p $APP/$ARK
+  cp -f $MOD/$ARKAPK $APP/$ARK/$ARKAPK
+  $SPR $APP/$ARK 0 0 0755 0644
+
+else
+
+  cp -f $MOD/$ARKAPK $APP/$ARKAPK
+  $SP $APP/$ARKAPK 0 0 0644
+
+fi
+
+for CFG in $ETC/$AEC $ETC/$HTC $ETC/$AEV $VETC/$AOE; do
+
+  if [ -f "$CFG" ]; then
+
+    sed -i '/arkamys {/,/}/d' $CFG
+    sed -i '/Arkamysfx {/,/}/d' $CFG
+    sed -i 's/^# Arkamys | www.arkamys.com | Library/# Arkamys | www.arkamys.com | Library\n\n  arkamys {\n    path \/system\/lib\/soundfx\/deuteronomy\/libarkamys.so\n  }/g' $CFG
+    sed -i 's/^# Arkamys | www.arkamys.com | Effect/# Arkamys | www.arkamys.com | Effect\n\n  Arkamysfx {\n    library arkamys\n    uuid 17852d50-161e-11e2-892e-0800200c9a66\n  }/g' $CFG
+
+  fi
+
+done
+
+rm -rf /tmp/arkamys
+
+exit 0

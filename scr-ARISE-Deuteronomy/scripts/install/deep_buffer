@@ -1,0 +1,142 @@
+#!/sbin/sh
+#
+# ARISE Sound Systems™ @XDA Developers
+#
+# Deuteronomy™ deep_buffer removal AROMA module
+#
+# www.arisesound.com
+
+OUTFD=/proc/self/fd/$2
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+if [ ! -d "$SYS/vendor" ] || [ -L "$SYS/vendor" ]; then
+  safe_mount /vendor
+  VEN=/vendor
+elif [ -d "$SYS/vendor" ] || [ -L "/vendor" ]; then
+  VEN=$SYS/vendor
+fi
+
+set_perm() {
+ if [ -e $1 ]; then
+  chown $2:$3 $1 || exit 1
+  chmod $4 $1 || exit 1
+  if [ "$5" ]; then
+  chcon $5 $1 2>/dev/null
+  else
+  chcon 'u:object_r:system_file:s0' $1 2>/dev/null
+  fi
+ fi
+}
+
+VETC=$VEN/etc
+ETC=$SYS/etc
+POL=audio_policy.conf
+POLBAK=audio_policy.conf.backup
+APC=audio_policy_configuration.xml
+APCBAK=audio_policy_configuration.xml.backup
+AOP=audio_output_policy.conf
+AOPBAK=audio_output_policy.conf.backup
+SP=set_perm
+BUILDPROP=$SYS/build.prop
+
+if [ -f "$ETC/$POL" ]; then
+
+  if [ -e "$ETC/$POLBAK" ]; then
+
+    sed -i '/deep_buffer {/,/}/d' $ETC/$POL
+    sed -i '/raw {/,/}/d' $ETC/$POL
+
+  else
+
+    cp -f $ETC/$POL $ETC/$POLBAK
+    $SP $ETC/$POLBAK 0 0 0644
+    sed -i '/deep_buffer {/,/}/d' $ETC/$POL
+    sed -i '/raw {/,/}/d' $ETC/$POL
+
+  fi
+
+fi
+
+if [ -f "$ETC/$AOP" ]; then
+
+  if [ -e "$ETC/$AOPBAK" ]; then
+
+    sed -i '/deep_buffer {/,/}/d' $ETC/$AOP
+    sed -i '/raw {/,/}/d' $ETC/$AOP
+
+  else
+
+    cp -f $ETC/$AOP $ETC/$AOPBAK
+    $SP $ETC/$AOPBAK 0 0 0644
+    sed -i '/deep_buffer {/,/}/d' $ETC/$AOP
+    sed -i '/raw {/,/}/d' $ETC/$AOP
+
+  fi
+
+fi
+
+if [ -f "$VETC/$POL" ]; then
+
+  if [ -e "$VETC/$POLBAK" ]; then
+
+    sed -i '/deep_buffer {/,/}/d' $VETC/$POL
+    sed -i '/raw {/,/}/d' $VETC/$POL
+
+  else
+
+    cp -f $VETC/$POL $VETC/$POLBAK
+    $SP $VETC/$POLBAK 0 0 0644
+    sed -i '/deep_buffer {/,/}/d' $VETC/$POL
+    sed -i '/raw {/,/}/d' $VETC/$POL
+
+  fi
+
+fi
+
+
+  if [ -f "$ETC/$APC" ]; then
+
+    if [ -e "$ETC/$APCBAK" ]; then
+
+    sed -i 's/deep_buffer,//g' $ETC/$APC
+
+  else
+
+    cp -f $ETC/$APC $ETC/$APCBAK
+    $SP $ETC/$APCBAK 0 0 0644
+    sed -i 's/deep_buffer,//g' $ETC/$APC
+
+      fi
+
+  fi
+
+
+
+exit 0

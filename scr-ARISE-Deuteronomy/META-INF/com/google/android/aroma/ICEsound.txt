@@ -1,0 +1,4 @@
+<b>ICEsound™ from SonicMaster™ 3.0</b>
+
+
+* ICEsound™, specifically ICEsoundService, is part of the SonicMaster ™ 3.0 audio system in the latest firmware of Asus™ premium devices.

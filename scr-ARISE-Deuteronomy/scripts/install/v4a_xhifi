@@ -1,0 +1,138 @@
+#!/sbin/sh
+#
+# ARISE Sound Systems™ @XDA Developers
+#
+# Deuteronomy™ ViPER4Android XHiFi AROMA module
+#
+# www.arisesound.com
+
+OUTFD=/proc/self/fd/$2
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+if [ ! -d "$SYS/vendor" ] || [ -L "$SYS/vendor" ]; then
+  safe_mount /vendor
+  VEN=/vendor
+elif [ -d "$SYS/vendor" ] || [ -L "/vendor" ]; then
+  VEN=$SYS/vendor
+fi
+
+if [ -e "$VEN/build.prop" ] && [ ! -e "$SYS/build.prop" ]; then
+  BUILDPROP=$VEN/build.prop
+elif [ -e "$SYS/build.prop" ] && [ ! -e "$VEN/build.prop" ]; then
+  BUILDPROP=$SYS/build.prop
+elif [ -e "$SYS/build.prop" ] && [ -e "$VEN/build.prop" ]; then
+  if [ $(wc -c < "$SYS/build.prop") -ge $(wc -c < "$VEN/build.prop") ]; then
+    BUILDPROP=$SYS/build.prop
+  else
+    BUILDPROP=$VEN/build.prop
+  fi
+fi
+
+set_perm() {
+ if [ -e $1 ]; then
+  chown $2:$3 $1 || exit 1
+  chmod $4 $1 || exit 1
+  if [ "$5" ]; then
+  chcon $5 $1 2>/dev/null
+  else
+  chcon 'u:object_r:system_file:s0' $1 2>/dev/null
+  fi
+ fi
+}
+
+set_perm_recursive() {
+  find $1 -type d 2>/dev/null | while read dir; do
+    set_perm $dir $2 $3 $4 $6
+  done
+  find $1 -type f 2>/dev/null | while read file; do
+    set_perm $file $2 $3 $5 $6
+  done
+}
+
+MOD=v4a_xhifi
+VETC=$VEN/etc
+APP=$SYS/app
+PAPP=$SYS/priv-app
+ETC=$SYS/etc
+LIB=$SYS/lib
+SUD=$SYS/su.d
+CSUD=custom/su.d
+DEUTFX=$SYS/lib/soundfx/deuteronomy
+V4A=ViPER4Android_XHiFi
+V4APK=ViPER4Android_XHiFi.apk
+V4ALIB=libv4a_xhifi_ics.so
+AEC=audio_effects.conf
+HTC=htc_audio_effects.conf
+AEV=audio_effects_vendor.conf
+AOE=audio_offload_effects.conf
+SERVER=arisesoundserver
+API=$(cat $BUILDPROP | grep "ro.build.version.sdk=" | dd bs=1 skip=21 count=2)
+SP=set_perm
+SPR=set_perm_recursive
+
+cd /tmp
+
+cp -f $MOD/$V4ALIB $DEUTFX/$V4ALIB
+$SP $DEUTFX/$V4ALIB 0 0 0644
+
+if [ "$API" -ge "21" ]; then
+
+  rm -f $SUD/$SERVER
+  mkdir -p $PAPP/$V4A
+  cp -f $MOD/permissive $SUD/$SERVER
+  cp -f $MOD/$V4APK $PAPP/$V4A/$V4APK
+  $SPR $PAPP/$V4A 0 0 0755 0644
+  $SP $SUD/permissive 0 0 0700
+  restorecon $SUD/permissive
+
+else
+
+  cp -f $MOD/$V4APK $APP/$V4APK
+  
+  $SP $APP/$V4A 0 0 0644
+
+fi
+
+for CFG in $ETC/$AEC $ETC/$HTC $ETC/$AEV $VETC/$AOE; do
+
+  if [ -f "$CFG" ]; then
+
+    sed -i '/v4a_xhifi {/,/}/d' $CFG
+    sed -i '/v4a_standard_xhifi {/,/}/d' $CFG
+    sed -i 's/^# ViPER.WYF | www.audlabs.com | Library/# ViPER.WYF | www.audlabs.com | Library\n\n  v4a_xhifi {\n    path \/system\/lib\/soundfx\/deuteronomy\/libv4a_xhifi_ics.so\n  }/g' $CFG
+    sed -i 's/^# ViPER.WYF | www.audlabs.com | Effect/# ViPER.WYF | www.audlabs.com | Effect\n\n  v4a_standard_xhifi {\n    library v4a_xhifi\n    uuid d92c3a90-3e26-11e2-a25f-0800200c9a66\n  }/g' $CFG
+
+  fi
+
+done
+
+rm -rf /tmp/v4a_xhifi
+
+exit 0

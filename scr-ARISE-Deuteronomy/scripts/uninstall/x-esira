@@ -1,0 +1,45 @@
+#!/sbin/sh
+#
+# ARISE Sound Systems™ @XDA Developers
+#
+# Deuteronomy™ Esira™ Media Player Uninstall AROMA module
+#
+# www.arisesound.com
+
+OUTFD=/proc/self/fd/$2;
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+PAPP=$SYS/priv-app
+APP=$SYS/app
+
+rm -rf $PAPP/Esira
+rm -f $APP/Esira.apk
+
+exit 0

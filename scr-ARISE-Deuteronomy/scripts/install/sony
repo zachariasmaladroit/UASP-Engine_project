@@ -1,0 +1,222 @@
+#!/sbin/sh
+#
+# ARISE Sound Systems™ @XDA Developers
+#
+# Deuteronomy™ Sony™ Music Suite AROMA module
+#
+# www.arisesound.com
+
+OUTFD=/proc/self/fd/$2
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+if [ ! -d "$SYS/vendor" ] || [ -L "$SYS/vendor" ]; then
+  safe_mount /vendor
+  VEN=/vendor
+elif [ -d "$SYS/vendor" ] || [ -L "/vendor" ]; then
+  VEN=$SYS/vendor
+fi
+
+if [ -e "$VEN/build.prop" ] && [ ! -e "$SYS/build.prop" ]; then
+  BUILDPROP=$VEN/build.prop
+elif [ -e "$SYS/build.prop" ] && [ ! -e "$VEN/build.prop" ]; then
+  BUILDPROP=$SYS/build.prop
+elif [ -e "$SYS/build.prop" ] && [ -e "$VEN/build.prop" ]; then
+  if [ $(wc -c < "$SYS/build.prop") -ge $(wc -c < "$VEN/build.prop") ]; then
+    BUILDPROP=$SYS/build.prop
+  else
+    BUILDPROP=$VEN/build.prop
+  fi
+fi
+
+set_perm() {
+ if [ -e $1 ]; then
+  chown $2:$3 $1 || exit 1
+  chmod $4 $1 || exit 1
+  if [ "$5" ]; then
+  chcon $5 $1 2>/dev/null
+  else
+  chcon 'u:object_r:system_file:s0' $1 2>/dev/null
+  fi
+ fi
+}
+
+set_perm_recursive() {
+  find $1 -type d 2>/dev/null | while read dir; do
+    set_perm $dir $2 $3 $4 $6
+  done
+  find $1 -type f 2>/dev/null | while read file; do
+    set_perm $file $2 $3 $5 $6
+  done
+}
+
+MOD=sony/system
+CUST=sony/custom
+APP=$SYS/app
+ETC=$SYS/etc
+FW=$SYS/framework
+LIB=$SYS/lib
+LIB64=$SYS/lib64
+PAPP=$SYS/priv-app
+PERM=$SYS/etc/permissions
+SUD=$SYS/su.d
+MFX=MusicFX
+MFXAPK=MusicFX.apk
+DLNA=dlna-somc-xxhdpi-release
+DLNAPK=dlna-somc-xxhdpi-release.apk
+LYRIC=GoogleLyricsPlugin
+LYRICAPK=GoogleLyricsPlugin.apk
+MUSIC=SemcMusic
+MUSICAPK=SemcMusic.apk
+POD=SomcPodcast
+PODAPK=SomcPodcast.apk
+TRKID=TrackID
+TRKIDAPK=TrackID.apk
+UNHSNTF=UnsupportedHeadsetNotifier
+UNHSNTFAPK=UnsupportedHeadsetNotifier.apk
+WIKI=WikipediaPlugin
+WIKIAPK=WikipediaPlugin.apk
+KARAOKE=YouTubeKaraokePlugin
+KARAOKEAPK=YouTubeKaraokePlugin.apk
+SOUND=SoundEnhancement
+SOUNDAPK=SoundEnhancement.apk
+YTUBE=YouTubePlugin
+YTUBEAPK=YouTubePlugin.apk
+LDAC=libldacBT_enc.so
+DSEE=libsonydseehxwrapper.so
+DSX=dsx_param_file.bin
+SONY=$(cat $BUILDPROP | grep "ro.product.brand=Sony")
+API=$(cat $BUILDPROP | grep "ro.build.version.sdk=" | dd bs=1 skip=21 count=2)
+SP=set_perm
+SPR=set_perm_recursive
+
+cd /tmp
+
+cp -Rf $MOD/* $SYS
+
+if [ "$API" -ge "21" ]; then
+
+  cp -Rf $CUST/app/* $APP
+  cp -Rf $CUST/priv-app/* $PAPP
+
+  if [ ! -e "$PAPP/$MFX/$MFXAPK" ]; then
+
+    mkdir -p $PAPP/$MFX
+    cp -f $CUST/$MFXAPK $PAPP/$MFX/$MFXAPK
+    $SPR $PAPP/$MFX 0 0 0755 0644
+
+  fi
+
+  $SPR $APP/$DLNA 0 0 0755 0644
+  $SPR $APP/$KARAOKE 0 0 0755 0644
+  $SPR $APP/$LYRIC 0 0 0755 0644
+  $SPR $APP/$SOUND 0 0 0755 0644
+  $SPR $APP/$UNHSNTF 0 0 0755 0644
+  $SPR $APP/$WIKI 0 0 0755 0644
+  $SPR $APP/$YTUBE 0 0 0755 0644
+  $SPR $PAPP/$MUSIC 0 0 0755 0644
+  $SPR $PAPP/$POD 0 0 0755 0644
+  $SPR $PAPP/$TRKID 0 0 0755 0644
+
+  if [ -d "$LIB64" ]; then
+
+    mkdir -p $APP/$DLNA/lib/arm64
+    cp -Rf $CUST/lib64/* $LIB64
+    cp -Rf $CUST/arm64/* $APP/$DLNA/lib/arm64
+    $SPR $APP/$DLNA 0 0 0755 0644
+    $SP $LIB64/$DSEE 0 0 0644
+    $SP $LIB64/libdlnacommonjni.so 0 0 0644
+    $SP $LIB64/libdlnaplayer.so 0 0 0644
+    $SP $LIB64/libhscomp.so 0 0 0644
+    $SP $LIB64/libhscomp_jni.so 0 0 0644
+    $SP $LIB64/libhuey.so 0 0 0644
+    $SP $LIB64/libhuey_dms_plugin.so 0 0 0644
+    $SP $LIB64/libprotobuf-cpp-2.3.0-lite.so 0 0 0644
+    $SP $LIB64/libsomcavextensionsimpl.so 0 0 0644
+    $SP $LIB64/libsomcmediahttp.so 0 0 0644
+
+  fi
+
+else
+
+  if [ ! -e "$PAPP/$MFXAPK" ]; then
+
+    cp -f $CUST/$MFXAPK $APP/$MFXAPK
+    $SP $APP/$MFXAPK 0 0 0644
+
+  fi
+
+  cp -f $CUST/app/$DLNA/$DLNAPK $APP/$DLNAPK
+  cp -f $CUST/app/$KARAOKE/$KARAOKEAPK $APP/$KARAOKEAPK
+  cp -f $CUST/app/$LYRIC/$LYRICAPK $APP/$LYRICAPK
+  cp -f $CUST/app/$SOUND/$SOUNDAPK $APP/$SOUNDAPK
+  cp -f $CUST/app/$WIKI/$WIKIAPK $APP/$WIKIAPK
+  cp -f $CUST/app/$UNHSNTF/$UNHSNTFAPK $APP/$UNHSNTFAPK
+  cp -f $CUST/app/$YTUBE/$YTUBEAPK $APP/$YTUBEAPK
+  cp -f $CUST/priv-app/$MUSIC/$MUSICAPK $APP/$MUSICAPK
+  cp -f $CUST/priv-app/$POD/$PODAPK $APP/$PODAPK
+  cp -f $CUST/priv-app/$TRKID/$TRKIDAPK $APP/$TRKIDAPK
+  $SP $APP/$DLNAPK 0 0 0644
+  $SP $APP/$KARAOKEAPK 0 0 0644
+  $SP $APP/$LYRICAPK 0 0 0644
+  $SP $APP/$MUSICAPK 0 0 0644
+  $SP $APP/$PODAPK 0 0 0644
+  $SP $APP/$SOUNDAPK 0 0 0644
+  $SP $APP/$TRKIDAPK 0 0 0644
+  $SP $APP/$UNHSNTF 0 0 0644
+  $SP $APP/$WIKIAPK 0 0 0644
+  $SP $APP/$YTUBEAPK 0 0 0644
+
+fi
+
+$SPR $ETC/sony_effect 0 0 0755 0644
+$SPR $FW 0 0 0755 0644
+$SPR $PERM 0 0 0755 0644
+$SP $ETC/$DSX 0 0 0644
+$SP $ETC/media_codecs_somc.xml 0 0 0644
+$SP $LIB/$DSEE 0 0 0644
+$SP $LIB/libbt-aptX-ARM-4.2.2.so 0 0 0644
+$SP $LIB/libdlnacommonjni.so 0 0 0644
+$SP $LIB/libdlnaplayer.so 0 0 0644
+$SP $LIB/$LDAC 0 0 0644
+$SP $LIB/libhscomp.so 0 0 0644
+$SP $LIB/libhscomp_jni.so 0 0 0644
+$SP $LIB/libhuey.so 0 0 0644
+$SP $LIB/libhuey_dms_plugin.so 0 0 0644
+$SP $LIB/libprotobuf-cpp-2.3.0-lite.so 0 0 0644
+$SP $LIB/libsomcavextensionsimpl.so 0 0 0644
+$SP $LIB/libsomcmediahttp.so 0 0 0644
+$SP $SUD/sony_setprop 0 0 0700
+restorecon $SUD/sony_setprop
+rm -f $VETC/media_codecs_somc.xml
+ln -s $ETC/media_codecs_somc.xml $VETC/media_codecs_somc.xml
+
+rm -rf /tmp/sony
+
+exit 0

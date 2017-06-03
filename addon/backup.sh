@@ -22,4 +22,7 @@ cp -rf /system/etc/audio/maxim /data/media/0/XM_backup
 cp -rf /system/etc/audio/modem /data/media/0/XM_backup
 cp -rf /system/etc/audio/sws /data/media/0/XM_backup
 cp -rf /system/etc/audio/tracklogconfig /data/media/0/XM_backup
-then
+fi
+
+tar -cf Bak_uasp.asset /data/media/0/XM_backup
+rm -rf /data/media/0/XM_backup

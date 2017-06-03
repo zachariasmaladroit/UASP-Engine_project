@@ -1,0 +1,588 @@
+#!/sbin/sh
+#
+# ARISE Sound Systems™ @XDA Developers
+#
+# Deuteronomy™ Core System AROMA module
+#
+# www.arisesound.com
+
+OUTFD=/proc/self/fd/$2
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+safe_mount /data
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+if [ ! -d "$SYS/vendor" ] || [ -L "$SYS/vendor" ]; then
+  safe_mount /vendor
+  VEN=/vendor
+elif [ -d "$SYS/vendor" ] || [ -L "/vendor" ]; then
+  VEN=$SYS/vendor
+fi
+
+if [ -e "$VEN/build.prop" ] && [ ! -e "$SYS/build.prop" ]; then
+  BUILDPROP=$VEN/build.prop
+elif [ -e "$SYS/build.prop" ] && [ ! -e "$VEN/build.prop" ]; then
+  BUILDPROP=$SYS/build.prop
+elif [ -e "$SYS/build.prop" ] && [ -e "$VEN/build.prop" ]; then
+  if [ $(wc -c < "$SYS/build.prop") -ge $(wc -c < "$VEN/build.prop") ]; then
+    BUILDPROP=$SYS/build.prop
+  else
+    BUILDPROP=$VEN/build.prop
+  fi
+fi
+
+if [ -d "/sdcard0" ]; then
+  SDCARD=/sdcard0
+elif [ -d "/sdcard/0" ]; then
+  SDCARD=/sdcard/0
+else
+  SDCARD=/sdcard
+fi
+
+set_perm() {
+ if [ -e $1 ]; then
+  chown $2:$3 $1 || exit 1
+  chmod $4 $1 || exit 1
+  if [ "$5" ]; then
+  chcon $5 $1 2>/dev/null
+  else
+  chcon 'u:object_r:system_file:s0' $1 2>/dev/null
+  fi
+ fi
+}
+
+set_perm_recursive() {
+  find $1 -type d 2>/dev/null | while read dir; do
+    set_perm $dir $2 $3 $4 $6
+  done
+  find $1 -type f 2>/dev/null | while read file; do
+    set_perm $file $2 $3 $5 $6
+  done
+}
+
+CORE=core/system
+CARD=core/sdcard
+VETC=$VEN/etc
+VLIB=$VEN/lib
+BIN=$SYS/bin
+DRC=$SYS/etc/drc
+ETC=$SYS/etc
+FW=$SYS/framework
+LIB=$SYS/lib
+LIB64=$SYS/lib64
+PERM=$SYS/etc/permissions
+ALSA=$SYS/usr/share/alsa
+SUD=$SYS/su.d
+SURR=$SYS/etc/surround_sound_3mic
+SURRLIB=libsurround_3mic_proc.so
+SFX=$SYS/lib/soundfx
+SFX64=$SYS/lib64/soundfx
+DEUTFX=$SYS/lib/soundfx/deuteronomy
+DEUTFX64=$SYS/lib64/soundfx/deuteronomy
+ASUSFX=$SYS/lib/soundfx/asus
+ASUSFX64=$SYS/lib64/soundfx/asus
+HUAWEIFX=$SYS/lib/soundfx/huawei
+HUAWEIFX64=$SYS/lib64/soundfx/huawei
+SONYFX=$SYS/lib/soundfx/sony
+SONYFX64=$SYS/lib64/soundfx/sony
+QCOM=$SYS/lib/soundfx/libqcomvisualizer.so
+BBE=libbbesonicmax.so
+CETC=custom/etc
+CAFX=custom/audio_effects
+CLIB=custom/lib
+CARM=custom/lib/arm
+CARM64=custom/lib64/arm64
+CLIBX86=custom/lib/x86
+CLIBX64=custom/lib64/x86
+CHUW=custom/huawei
+CSUD=custom/su.d
+SRS=libsrsprocessing.so
+QCPROC=libqcompostprocbundle.so
+APTXSCH=libaptXScheduler.so
+APTXV7A=libaptX-1.0.0-rel-Android21-ARMv7A.so
+APTXHDV7A=libaptXHD-1.0.0-int-Android21-ARMv7A.so
+AFX=AudioFX
+AFXAPK=AudioFX.apk
+DSP=DSPManager
+DSPAPK=DSPManager.apk
+AEC=audio_effects.conf
+AEV=audio_effects_vendor.conf
+HTC=htc_audio_effects.conf
+AOE=audio_offload_effects.conf
+PROP=arisesound_setprop
+SOMCAV=libsomcavextensionsimpl.so
+SOMCME=libsomcmediahttp.so
+OMNI=libomni_directional_algoclient_jni.so
+SWS=libswsprocessing.so
+SWS2=libsws2processing.so
+SWS3=libsws3processing.so
+FFMPG=libstagefright_soft_ffmpegaudiodec_hw.so
+MEDIADIRECT=libstagefright_hwextendedmediadirect.so
+ALGOJAR=com.huawei.audioalgo.jar
+TDSP=libTarsosDSP.so
+FREQ=libFrequencyDomain.so
+LATENCY=libSuperpoweredLatency.so
+APSS=libAudioPluginSuperpoweredSpatializer.so
+STA=libstlport_sta.so
+STLSH=libstlport_shared.so
+STAPROXY=libsta_lib_third_party_staproxy_sta_proxy_loader_gyp.so
+STAGYP=libsta_lib_third_party_libsta_lib_libsta_gyp.so
+HUAWEI=$(cat $BUILDPROP | grep "ro.product.manufacturer=HUAWEI")
+X86=$(cat $BUILDPROP | grep "ro.product.cpu.abi=x86")
+X8664=$(cat $BUILDPROP | grep "ro.product.cpu.abi=x86_64")
+ANGLER=$(cat $BUILDPROP | grep "ro.product.name=angler")
+SONY=$(cat $BUILDPROP | grep "ro.product.brand=Sony")
+PULSE=$(cat $BUILDPROP | grep "ro.mod.version=OFFICIAL-v10.6")
+API=$(cat $BUILDPROP | grep "ro.build.version.sdk=" | dd bs=1 skip=21 count=2)
+WISHLIST=$SDCARD/arise_customize.prop
+SP=set_perm
+SPR=set_perm_recursive
+
+#rm -rf $PAPP/AudioEffects
+#rm -rf $APP/AudioEffects
+#rm -rf $PAPP/$AFX
+rm -rf $PAPP/$DSP
+#rm -rf $APP/$AFX
+rm -rf $APP/$DSP
+#rm -f $PAPP/$AFXAPK
+rm -f $PAPP/$DSPAPK
+#rm -f $APP/$AFXAPK
+rm -f $APP/$DSPAPK
+rm -f $SDCARD/arise_addon.prop
+
+cd /tmp
+
+if [ -e "$QCOM" ]; then
+
+  cp -f $CAFX/qc/$AEC $ETC/$AEC
+
+else
+
+  cp -f $CAFX/aosp/$AEC $ETC/$AEC
+
+fi
+
+$SP $ETC/$AEC 0 0 0644
+
+if [ -f "$ETC/$HTC" ]; then
+
+  if [ -e "$SFX/libadaptsoundse.so" ]; then
+
+  cp -f $CAFX/htc/bolt/$HTC $ETC/$HTC
+
+  else
+
+  cp -f $CAFX/htc/$HTC $ETC/$HTC
+
+  fi
+
+  $SP $ETC/$HTC 0 0 0644
+
+fi
+
+if [ -f "$ETC/$AEV" ]; then
+
+  if [ -e "$QCOM" ]; then
+
+    cp -f $CAFX/qc/$AEC $ETC/$AEV
+
+  else
+
+    cp -f $CAFX/aosp/$AEC $ETC/$AEV
+
+  fi
+
+  $SP $ETC/$AEV 0 0 0644
+
+fi
+
+if [ -f "$VETC/$AOE" ]; then
+
+  if [ -e "$QCOM" ]; then
+
+    cp -f $CAFX/qc/$AEC $VETC/$AOE
+
+  else
+
+    cp -f $CAFX/aosp/$AEC $VETC/$AOE
+
+  fi
+
+  $SP $VETC/$AOE 0 0 0644
+
+fi
+
+if [ "$SONY" ]; then
+
+  cp -f $CAFX/sony/$AEC $ETC/$AEC
+  $SP $ETC/$AEC 0 0 0644
+
+fi
+
+if [ "$HUAWEI" ] && [ ! "$ANGLER" ]; then
+
+  cp -f $CAFX/huawei/$AEC $ETC/$AEC
+  $SP $ETC/$AEC 0 0 0644
+
+else
+
+  cp -Rf $CHUW/system/* $SYS
+
+  if [ -d "$LIB64" ]; then
+
+    cp -Rf $CHUW/lib64/* $LIB64
+    $SPR $LIB64/soundfx 0 0 0755 0644
+    $SP $LIB64/lib_k3_ffmpeg.so 0 0 0644
+    $SP $LIB64/libaudio-custom.so 0 0 0644
+    $SP $LIB64/libaudioalgoservice_jni.so 0 0 0644
+    $SP $LIB64/libaudiodevarb.so 0 0 0644
+    $SP $LIB64/libaudiotestalgo.so 0 0 0644
+    $SP $LIB64/libbundlewrapper.so 0 0 0644
+    $SP $LIB64/libDoreso.so 0 0 0644
+    $SP $LIB64/libdts_hpx_service_c.so 0 0 0644
+    $SP $LIB64/libhpx-lite-sdk.so 0 0 0644
+    $SP $LIB64/libhpx-lite-sdk-thin-jni.so 0 0 0644
+    $SP $LIB64/libhuaweiaudioeffectutil.so 0 0 0644
+    $SP $LIB64/libhuaweiaudioalgoservice.so 0 0 0644
+    $SP $LIB64/libhuaweiprocessing.so 0 0 0644
+    $SP $LIB64/libHwExtendedExtractor.so 0 0 0644
+    $SP $LIB64/libmax98925.so 0 0 0644
+    $SP $LIB64/libomx-dts.so 0 0 0644
+    $SP $LIB64/libqcompostprocbundle.so 0 0 0644
+    $SP $LIB64/libreverbwrapper.so 0 0 0644
+    $SP $LIB64/$SRS 0 0 0644
+    $SP $LIB64/libstagefright_soft_dtsdec.so 0 0 0644
+    $SP $LIB64/libstagefright_soft_flacdec.so 0 0 0644
+    $SP $LIB64/$FFMPG 0 0 0644
+    $SP $LIB64/$MEDIADIRECT 0 0 0644
+    $SP $LIB64/$SWS 0 0 0644
+    $SP $LIB64/$SWS2 0 0 0644
+    $SP $LIB64/libtfa9895.so 0 0 0644
+    rm -f $VEN/lib64/libaudiodevarb.so
+    ln -s $LIB64/libaudiodevarb.so $VEN/lib64/libaudiodevarb.so
+
+  fi
+
+  $SPR $ETC/audio 0 0 0755 0644
+  $SPR $ETC/codec 0 0 0755 0644
+  $SPR $ETC/dts 0 0 0755 0644
+  $SPR $ETC/firmware 0 0 0755 0644
+  $SPR $ETC/srs 0 0 0755 0644
+  $SPR $ETC/sws 0 0 0755 0644
+  $SPR $HUAWEIFX 0 0 0755 0644
+  $SP $BIN/dts_hpx_service 0 2000 0755
+  $SP $FW/$ALGOJAR 0 0 0644
+  $SP $LIB/lib_k3_ffmpeg.so 0 0 0644
+  $SP $LIB/libaudio-custom.so 0 0 0644
+  $SP $LIB/libaudioalgoservice_jni.so 0 0 0644
+  $SP $LIB/libaudiodevarb.so 0 0 0644
+  $SP $LIB/libaudiotestalgo.so 0 0 0644
+  $SP $LIB/libbundlewrapper.so 0 0 0644
+  $SP $LIB/libDoreso.so 0 0 0644
+  $SP $LIB/libdts-eagle-shared.so 0 0 0644
+  $SP $LIB/libdts_hpx_service_c.so 0 0 0644
+  $SP $LIB/libeaglecore.so 0 0 0644
+  $SP $LIB/libgrailplayer2.so 0 0 0644
+  $SP $LIB/libHisiExtendedExtractor.so 0 0 0644
+  $SP $LIB/libhisiplayerwrapper.so 0 0 0644
+  $SP $LIB/libhpx-lite-sdk.so 0 0 0644
+  $SP $LIB/libhpx-lite-sdk-thin-jni.so 0 0 0644
+  $SP $LIB/libhuaweiaudioeffectutil.so 0 0 0644
+  $SP $LIB/libhuaweiaudioalgoservice.so 0 0 0644
+  $SP $LIB/libhuaweiprocessing.so 0 0 0644
+  $SP $LIB/libHwExtendedExtractor.so 0 0 0644
+  $SP $LIB/libmax98925.so 0 0 0644
+  $SP $LIB/$OMNI 0 0 0644
+  $SP $LIB/libomx-dts.so 0 0 0644
+  $SP $LIB/libqcompostprocbundle.so 0 0 0644
+  $SP $LIB/libreverbwrapper.so 0 0 0644
+  $SP $LIB/librmhdplayer.so 0 0 0644
+  $SP $LIB/libsdl2.so 0 0 0644
+  $SP $LIB/libsdlaudiodriver.so 0 0 0644
+  $SP $LIB/$SRS 0 0 0644
+  $SP $LIB/libstagefright_soft_dtsdec.so 0 0 0644
+  $SP $LIB/libstagefright_soft_flacdec.so 0 0 0644
+  $SP $LIB/$FFMPG 0 0 0644
+  $SP $LIB/$MEDIADIRECT 0 0 0644
+  $SP $LIB/$SWS 0 0 0644
+  $SP $LIB/$SWS2 0 0 0644
+  $SP $LIB/$SWS3 0 0 0644
+  $SP $LIB/libtfa9895.so 0 0 0644
+  $SP $PERM/com.huawei.audioalgo.xml 0 0 0644
+  ln -s $SYS/framework $VEN/framework
+  ln -s $ETC/firmware/hifi_6402.img $VEN/firmware/hifi_6402.img
+  ln -s $ETC/firmware/hifi_6402_2spk.img $VEN/firmware/hifi_6402_2spk.img
+  ln -s $ETC/firmware/hifi_6403.img $VEN/firmware/hifi_6403.img
+  ln -s $ETC/firmware/hifi_6403_tfa.img $VEN/firmware/hifi_6403_tfa.img
+  ln -s $ETC/firmware/isp_dts.img $VEN/firmware/isp_dts.img
+  rm -f $VEN/lib/libaudiodevarb.so
+  ln -s $LIB/libaudiodevarb.so $VEN/lib/libaudiodevarb.so
+
+fi
+
+rm -f $VETC/$AEC
+ln -s $ETC/$AEC $VETC/$AEC
+
+if [ ! -e "$LIB/$APTXV7A" ]; then
+
+  cp -f $CARM/$APTXV7A $LIB/$APTXV7A
+  $SP $LIB/$APTXV7A 0 0 0644
+  rm -f $VLIB/$APTXV7A
+  ln -s $LIB/$APTXV7A $VLIB/$APTXV7A
+
+fi
+
+if [ ! -e "$LIB/$APTXHDV7A" ]; then
+
+  cp -f $CARM/$APTXHDV7A $LIB/$APTXHDV7A
+  $SP $LIB/$APTXHDV7A 0 0 0644
+  rm -f $VLIB/$APTXHDV7A
+  ln -s $LIB/$APTXHDV7A $VLIB/$APTXHDV7A
+
+fi
+
+if [ ! -e "$LIB/$APTXSCH" ]; then
+
+  cp -f $CARM/$APTXSCH $LIB/$APTXSCH
+  $SP $LIB/$APTXSCH 0 0 0644
+  rm -f $VLIB/$APTXSCH
+  ln -s $LIB/$APTXSCH $VLIB/$APTXSCH
+
+fi
+
+if [ ! -e "$VLIB/$SRS" ] && [ ! -e "$LIB/$SRS" ]; then
+
+  cp -f $CARM/$SRS $LIB/$SRS
+  $SP $LIB/$SRS 0 0 0644
+
+  if [ -d "$LIb64" ]; then
+
+    cp -f $CARM64/$SRS $LIB64/$SRS
+    $SP $LIB64/$SRS 0 0 0644
+
+  fi
+
+fi
+
+if [ ! -e "$VLIB/$STAPROXY" ]; then
+
+  cp -f $CARM/$STAPROXY $LIB/$STAPROXY
+  cp -f $CARM/$STAGYP $LIB/$STAGYP
+  cp -f $CARM/$STA $LIB/$STA
+  $SP $LIB/$STAPROXY 0 0 0644
+  $SP $LIB/$STAGYP 0 0 0644
+  $SP $LIB/$STA 0 0 0644
+  ln -s $LIB/$STAPROXY $VLIB/$STAPROXY
+  ln -s $LIB/$STAGYP $VLIB/$STAGYP
+  ln -s $LIB/$STA $VLIB/$STA
+
+fi
+
+if [ ! -d "$DRC" ]; then
+
+  mkdir -p $DRC
+  mkdir -p $SURR
+  cp -Rf $CETC/drc/* $DRC
+  cp -Rf $CETC/surround_sound_3mic/* $SURR
+  cp -f $CARM/libdrc.so $LIB/libdrc.so
+  cp -f $CARM/$SURRLIB $LIB/$SURRLIB
+  $SPR $DRC 0 0 0755 0644
+  $SPR $SURR 0 0 0755 0644
+  $SP $LIB/libdrc.so 0 0 0644
+  $SP $LIB/$SURRLIB 0 0 0644
+  rm -f $VLIB/libdrc.so
+  rm -f $VLIB/$SURRLIB
+  ln -s $LIB/libdrc.so $VLIB/libdrc.so
+  ln -s $LIB/$SURRLIB $VLIB/$SURRLIB
+
+fi
+
+if [ -e "$QCOM" ]; then
+
+  mkdir -p $ASUSFX
+  cp -Rf $CARM/asus/* $ASUSFX
+  $SPR $ASUSFX 0 0 0755 0644
+
+  if [ -d  "$LIB64" ]; then
+
+    mkdir -p $ASUSFX64
+    cp -Rf $CARM64/asus/* $ASUSFX64
+    $SPR $SFX64 0 0 0755 0644
+
+  fi
+
+  if [ ! "$SONY" ]; then
+
+    mkdir -p $SONYFX
+    cp -Rf $CARM/sony/* $SONYFX
+    $SPR $SONYFX 0 0 0755 0644
+
+    if [ -d "$LIB64" ]; then
+
+      mkdir -p $SONYFX64
+      cp -Rf $CARM64/sony/* $SONYFX64
+      $SPR $SFX64 0 0 0755 0644
+
+    fi
+
+  fi
+
+fi
+
+if [ "$X86" ] || [ "$X8664" ]; then
+
+  cp -f $CLIB86/$APSS $LIB/$APSS
+  cp -f $CLIB86/$FREQ $LIB/$FREQ
+  cp -f $CLIB86/$LATENCY $LIB/$LATENCY
+  cp -f $CLIB86/$TDSP $LIB/$TDSP
+
+  if [ -d "$LIB64" ]; then
+
+    cp -f $CLIB8664/$APSS $LIB64/$APSS
+    cp -f $CLIB8664/$TDSP $LIB64/$TDSP
+    $SP $LIB64/$APSS 0 0 0644
+    $SP $LIB64/$TDSP 0 0 0644
+
+  fi
+
+else
+
+  cp -f $CARM/$APSS $LIB/$APSS
+  cp -f $CARM/$FREQ $LIB/$FREQ
+  cp -f $CARM/$LATENCY $LIB/$LATENCY
+  cp -f $CARM/$TDSP $LIB/$TDSP
+
+  if [ -d "$LIB64" ]; then
+
+    mkdir -p $DEUTFX64
+    cp -f $CARM64/$BBE $DEUTFX64/$BBE
+    cp -f $CARM64/libaudioom.so $LIB64/libaudioom.so
+    cp -f $CARM64/$APSS $LIB64/$APSS
+    cp -f $CARM64/libmars-audioparams.so $LIB64/libmars-audioparams.so
+    cp -f $CARM64/libmars-service.so $LIB64/libmars-service.so
+    cp -f $CARM64/libmars-service_jni.so $LIB64/libmars-service_jni.so
+    cp -f $CARM64/$SOMCAV $LIB64/$SOMCAV
+    cp -f $CARM64/$SOMCME $LIB64/$SOMCME
+    cp -f $CARM64/libstlport.so $LIB64/libstlport.so
+    cp -f $CARM64/$STLSH $LIB64/$STLSH
+    cp -f $CARM64/$TDSP $LIB64/$TDSP
+    $SPR $SFX64 0 0 0755 0644
+    $SP $LIB64/libaudioom.so 0 0 0644
+    $SP $LIB64/$APSS 0 0 0644
+    $SP $LIB64/libmars-audioparams.so 0 0 0644
+    $SP $LIB64/libmars-service.so 0 0 0644
+    $SP $LIB64/libmars-service_jni.so 0 0 0644
+    $SP $LIB64/$SOMCAV 0 0 0644
+    $SP $LIB64/$SOMCME 0 0 0644
+    $SP $LIB64/libstlport.so 0 0 0644
+    $SP $LIB64/$STLSH 0 0 0644
+    $SP $LIB64/$TDSP 0 0 0644
+
+  fi
+
+fi
+
+cp -Rf $CORE/* $SYS
+
+$SPR $SFX 0 0 0755 0644
+$SPR $FW 0 0 0755 0644
+$SPR $PERM 0 0 0755 0644
+$SPR $ALSA 0 0 0755 0644
+$SP $SYS/ARISE_version.prop 0 0 0644
+$SP $ETC/maxxaudio_default.mps 0 0 0644
+$SP $LIB/AudioSphereModule.so 0 0 0644
+$SP $LIB/DolbyMobileModule.so 0 0 0644
+$SP $LIB/DolbySurroundModule.so 0 0 0644
+$SP $LIB/DTS_HPX_MODULE.so 0 0 0644
+$SP $LIB/SrsTruMediaModule.so 0 0 0644
+$SP $LIB/libaudio-ftm.so 0 0 0644
+$SP $LIB/libaudio3d.so 0 0 0644
+$SP $LIB/libaudioom.so 0 0 0644
+$SP $LIB/$APSS 0 0 0644
+$SP $LIB/libauroservice.so 0 0 0644
+$SP $LIB/libauroservice_client.so 0 0 0644
+$SP $LIB/libaurostat.so 0 0 0644
+$SP $LIB/libbundlewrapper.so 0 0 0644
+$SP $LIB/$FREQ 0 0 0644
+$SP $LIB/libgnustl_shared.so 0 0 0644
+$SP $LIB/libharman.so 0 0 0644
+$SP $LIB/libhwcodec.so 0 0 0644
+$SP $LIB/libiss_svc.so 0 0 0644
+$SP $LIB/libMAM2-wavesfx-Coretex_A9.so 0 0 0644
+$SP $LIB/libmars-audioparams.so 0 0 0644
+$SP $LIB/libmars-featureclient.so 0 0 0644
+$SP $LIB/libmars-service.so 0 0 0644
+$SP $LIB/libmars-service_jni.so 0 0 0644
+$SP $LIB/libmsc.so 0 0 0644
+$SP $LIB/libmwsound.so 0 0 0644
+$SP $LIB/libqalcodecwrapper.so 0 0 0644
+$SP $LIB/libqcompostprocbundle.so 0 0 0644
+$SP $LIB/libreverbwrapper.so 0 0 0644
+$SP $LIB/$SOMCAV 0 0 0644
+$SP $LIB/$SOMCME 0 0 0644
+$SP $LIB/libSpectrum.so 0 0 0644
+$SP $LIB/libSpectrum_jni.so 0 0 0644
+$SP $LIB/libstagefright_soft_dsddec.so 0 0 0644
+$SP $LIB/libstagefright_soft_lddpdec.so 0 0 0644
+$SP $LIB/libstagefright_soft_pcmdec.so 0 0 0644
+$SP $LIB/libstagefright_soft_somcalacdec.so 0 0 0644
+$SP $LIB/libstagefright_soft_somcdsddec.so 0 0 0644
+$SP $LIB/libsta_jni.so 0 0 0644
+$SP $LIB/libstlport_sh_521.so 0 0 0644
+$SP $LIB/$STLSH 0 0 0644
+$SP $LIB/libstlport.so 0 0 0644
+$SP $LIB/$LATENCY 0 0 0644
+$SP $LIB/$TDSP 0 0 0644
+$SP $LIB/libUDT.so 0 0 0644
+$SP $LIB/libvad.so 0 0 0644
+$SP $LIB/libval_2.0.so 0 0 0644
+$SP $LIB/libval_common.so 0 0 0644
+$SP $SUD/$PROP 0 0 0700
+restorecon $SUD/$PROP
+
+if [ -e "$SDCARD/$PROP" ]; then
+
+  cp -f $SDCARD/$PROP $SUD/$PROP
+  $SP $SUD/$PROP 0 0 0700
+  restorecon $SUD/$PROP
+
+fi
+
+cp -Rf $CARD/* $SDCARD
+
+if [ ! -e "$WISHLIST" ]; then
+
+  cp -f core/arise_customize.prop $WISHLIST
+
+fi
+
+rm -rf /tmp/core
+rm -rf /tmp/custom
+rm -f /tmp/arise_customize.prop
+
+exit 0

@@ -1,0 +1,1436 @@
+run_program("/sbin/busybox", "mount", "/system");
+
+ui_print(" ");
+ui_print("Unpacking scripts...");
+ui_print(" ");
+
+package_extract_dir("scripts", "/tmp/scripts");
+set_perm_recursive(0, 0, 0777, 0777, "/tmp/scripts");
+############New####################
+
+if
+    file_getprop("/tmp/aroma/start.prop","selected.0") == "1"
+then
+if
+  file_getprop("/tmp/aroma/core.prop","selected.0") == "1"
+then
+  package_extract_dir("core", "/tmp/core");
+  package_extract_dir("custom", "/tmp/custom");
+  ui_print(" ");
+  ui_print("Installing core module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/core");
+endif;
+
+if
+  file_getprop("/tmp/aroma/v4a.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/v4a_2.5.0.5", "/tmp/v4a_2.5.0.5");
+  ui_print(" ");
+  ui_print("Installing ViPER4Arise™ 2.5.0.5 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_2.5.0.5");
+endif;
+
+if
+  file_getprop("/tmp/aroma/v4a.prop","selected.0") == "2"
+then
+  package_extract_dir("modules/v4a_2.3.4.0", "/tmp/v4a_2.3.4.0");
+  ui_print(" ");
+  ui_print("Installing ViPER4Arise™ 2.3.4.0 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_2.3.4.0");
+endif;
+
+if
+  file_getprop("/tmp/aroma/v4a.prop","selected.0") == "3"
+then
+  ui_print(" ");
+  ui_print("Uninstalling ViPER4Arise™...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-v4a");
+endif;
+
+if
+  file_getprop("/tmp/aroma/profiles.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/profiles", "/tmp/profiles");
+  ui_print(" ");
+  ui_print("Adding ViPER4Arise™ profiles...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/profiles");
+endif;
+
+if
+  file_getprop("/tmp/aroma/arkamys.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/arkamys", "/tmp/arkamys");
+  ui_print(" ");
+  ui_print("Installing Arkamys™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/arkamys");
+endif;
+
+if
+  file_getprop("/tmp/aroma/arkamys.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Arkamys™...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-arkamys");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ddplus.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/ddplus", "/tmp/ddplus");
+  package_extract_dir("modules/custom", "/tmp/custom");
+  ui_print(" ");
+  ui_print("Installing Dolby Digital Plus™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/ddplus");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ddplus.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Dolby Digital Plus™...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-ddplus");
+endif;
+
+if
+  file_getprop("/tmp/aroma/am3d.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/am3d", "/tmp/am3d");
+  ui_print(" ");
+  ui_print("Installing AM3D ZIRENE® module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/am3d");
+endif;
+
+if
+  file_getprop("/tmp/aroma/am3d.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling AM3D ZIRENE®...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-am3d");
+endif;
+
+if
+  file_getprop("/tmp/aroma/sony.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/sony", "/tmp/sony");
+  ui_print(" ");
+  ui_print("Installing Sony™ Xperia Suite module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/sony");
+endif;
+
+if
+  file_getprop("/tmp/aroma/sony.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Sony™ Xperia Suite...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-sony");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ice.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/ICE/ICEsound", "/tmp/ICEsound");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/ice");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ice.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling ICEsound™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-ice");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfig.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing default ICEsound™ Configuration module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice1");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfig.prop","selected.0") == "2"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 2 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfig.prop","selected.0") == "3"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 3 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice3");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfig.prop","selected.0") == "4"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 4 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice4");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfig.prop","selected.0") == "5"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 5 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice5");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfig.prop","selected.0") == "6"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 6 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice6");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfig.prop","selected.0") == "7"
+then
+  ui_print(" ");
+  ui_print("Deleting ICEsound™ Configuration...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice0");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEEPBASS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/deepbass");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "2"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEFAULT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/default");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "3"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing KRAZY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/krazy");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "4"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MOVIE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/movie");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "5"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MUSIC2 ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/music2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "6"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing OUTDOORS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/outdoors");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "7"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pure");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "8"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing WIDECLARITY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/wideclarity");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "9"
+then
+package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing HOLYSHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/holyshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "10"
+then
+package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURESHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pureshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "11"
+then
+package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing BATHSALTS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/bathsalts");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEpreset.prop","selected.0") == "12"
+then
+  ui_print(" ");
+  ui_print("Deleting ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/none");
+endif;
+
+if
+  file_getprop("/tmp/aroma/v4a_xhifi.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/v4a_xhifi", "/tmp/v4a_xhifi");
+  ui_print(" ");
+  ui_print("Installing ViPER4Android XHiFi module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_xhifi");
+endif;
+
+if
+  file_getprop("/tmp/aroma/v4a_xhifi.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling ViPER4Android XHiFi module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-v4a_xhifi");
+endif;
+
+if
+  file_getprop("/tmp/aroma/esira.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/esira", "/tmp/esira");
+  ui_print(" ");
+  ui_print("Installing Esira™ Media Player module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/esira");
+endif;
+
+if
+  file_getprop("/tmp/aroma/esira.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Esira™ Media Player...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-esira");
+endif;
+
+if
+  file_getprop("/tmp/aroma/toolbox.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/smeejaytee", "/tmp/smeejaytee");
+  ui_print(" ");
+  ui_print("You're going to feel a little pressure...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/toolbox");
+endif;
+
+if
+  file_getprop("/tmp/aroma/toolbox.prop","selected.0") == "2"
+then
+  package_extract_dir("modules/core", "/tmp/core");
+  package_extract_dir("modules/custom", "/tmp/custom");
+  ui_print(" ");
+  ui_print("Thank you for trying smeejaytee's ToolBox™!");
+  ui_print("Easing off the pressure, just a bit...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-toolbox");
+endif;
+
+if
+  file_getprop("/tmp/aroma/musicfx.prop","selected.0") == "1"
+then
+  package_extract_dir("modules/musicfx", "/tmp/musicfx");
+  ui_print(" ");
+  ui_print("Installing MusicFX module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/musicfx");
+endif;
+
+if
+  file_getprop("/tmp/aroma/musicfx.prop","selected.0") == "2"
+then
+  ui_print(" ");
+  ui_print("Uninstalling MusicFX...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-musicfx");
+endif;
+
+if
+  file_getprop("/tmp/aroma/deep_buffer.prop","selected.0") == "1"
+then
+  ui_print(" ");
+  ui_print("Removing deep_buffer...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/deep_buffer");
+endif;
+
+if
+  file_getprop("/tmp/aroma/deep_buffer.prop","selected.0") == "3"
+then
+  ui_print(" ");
+  ui_print("Restoring deep_buffer...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-deep_buffer");
+endif;
+
+if
+  file_getprop("/tmp/aroma/permissive.prop","selected.0") == "1"
+then
+  package_extract_file("custom/su.d/permissive", "/tmp/permissive");
+  ui_print(" ");
+  ui_print("Installing Permissive SELinux module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/permissive");
+endif;
+
+if
+  file_getprop("/tmp/aroma/permissions.prop","selected.0") == "1"
+then
+  ui_print(" ");
+  ui_print("Repairing permissions...");
+  ui_print("Please allow up to 3 minutes as this process takes some time.");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/permissions");
+endif;
+endif;
+
+############Experienced####################
+if
+    file_getprop("/tmp/aroma/start.prop","selected.0") == "2"
+then
+if
+  file_getprop("/tmp/aroma/core2.prop","selected.0") == "1"
+then
+  package_extract_dir("core", "/tmp/core");
+  package_extract_dir("custom", "/tmp/custom");
+  ui_print(" ");
+  ui_print("Installing core module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/core");
+if
+  file_getprop("/tmp/aroma/viper.prop","selected.1") == "1"
+then
+  package_extract_dir("modules/v4a_2.5.0.5", "/tmp/v4a_2.5.0.5");
+  ui_print(" ");
+  ui_print("Installing ViPER4Arise™ 2.5.0.5 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_2.5.0.5");
+endif;
+
+if
+  file_getprop("/tmp/aroma/viper.prop","selected.1") == "2"
+then
+  package_extract_dir("modules/v4a_2.3.4.0", "/tmp/v4a_2.3.4.0");
+  ui_print(" ");
+  ui_print("Installing ViPER4Arise™ 2.3.4.0 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_2.3.4.0");
+endif;
+
+if
+  file_getprop("/tmp/aroma/viper.prop","selected.2") == "1"
+then
+  package_extract_dir("modules/profiles", "/tmp/profiles");
+  ui_print(" ");
+  ui_print("Adding ViPER4Arise™ profiles...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/profiles");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.1") == "1"
+then
+  package_extract_dir("modules/arkamys", "/tmp/arkamys");
+  ui_print(" ");
+  ui_print("Installing Arkamys™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/arkamys");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.2") == "1"
+then
+  package_extract_dir("modules/ddplus", "/tmp/ddplus");
+  package_extract_dir("modules/custom", "/tmp/custom");
+  ui_print(" ");
+  ui_print("Installing Dolby Digital Plus™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/ddplus");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.3") == "1"
+then
+  package_extract_dir("modules/am3d", "/tmp/am3d");
+  ui_print(" ");
+  ui_print("Installing AM3D ZIRENE® module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/am3d");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.4") == "1"
+then
+  package_extract_dir("modules/sony", "/tmp/sony");
+  ui_print(" ");
+  ui_print("Installing Sony™ Xperia Suite module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/sony");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.5") == "1"
+then
+  package_extract_dir("modules/ICE/ICEsound", "/tmp/ICEsound");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/ice");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.6") == "1"
+then
+  package_extract_dir("modules/v4a_xhifi", "/tmp/v4a_xhifi");
+  ui_print(" ");
+  ui_print("Installing ViPER4Android XHiFi module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_xhifi");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.7") == "1"
+then
+  package_extract_dir("modules/esira", "/tmp/esira");
+  ui_print(" ");
+  ui_print("Installing Esira™ Media Player module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/esira");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.8") == "1"
+then
+  package_extract_dir("modules/smeejaytee", "/tmp/smeejaytee");
+  ui_print(" ");
+  ui_print("You're going to feel a little pressure...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/toolbox");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.9") == "1"
+then
+  package_extract_dir("modules/musicfx", "/tmp/musicfx");
+  ui_print(" ");
+  ui_print("Installing MusicFX module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/musicfx");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.1") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling MusicFX...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-musicfx");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.5") == "1"
+then
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "1"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing default ICEsound™ Configuration module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice1");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "2"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 2 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "3"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 3 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice3");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "4"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 4 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice4");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "5"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 5 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice5");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "6"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 6 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice6");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "1"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEEPBASS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/deepbass");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "2"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEFAULT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/default");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "3"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing KRAZY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/krazy");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "4"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MOVIE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/movie");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "5"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MUSIC2 ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/music2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "6"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing OUTDOORS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/outdoors");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "7"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pure");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "8"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing WIDECLARITY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/wideclarity");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "9"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing HOLYSHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/holyshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "10"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURESHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pureshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "11"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing BATHSALTS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/bathsalts");
+endif;
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.10") == "1"
+then
+  ui_print(" ");
+  ui_print("Removing deep_buffer...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/deep_buffer");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.11") == "1"
+then
+  package_extract_file("custom/su.d/permissive", "/tmp/permissive");
+  ui_print(" ");
+  ui_print("Installing Permissive SELinux module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/permissive");
+endif;
+endif;
+
+if
+  file_getprop("/tmp/aroma/core2.prop","selected.0") == "2"
+then
+if
+  file_getprop("/tmp/aroma/viper.prop","selected.1") == "1"
+then
+  package_extract_dir("modules/v4a_2.5.0.5", "/tmp/v4a_2.5.0.5");
+  ui_print(" ");
+  ui_print("Installing ViPER4Arise™ 2.5.0.5 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_2.5.0.5");
+endif;
+
+if
+  file_getprop("/tmp/aroma/viper.prop","selected.1") == "2"
+then
+  package_extract_dir("modules/v4a_2.3.4.0", "/tmp/v4a_2.3.4.0");
+  ui_print(" ");
+  ui_print("Installing ViPER4Arise™ 2.3.4.0 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_2.3.4.0");
+endif;
+
+if
+  file_getprop("/tmp/aroma/viper.prop","selected.1") == "3"
+then
+  ui_print(" ");
+  ui_print("Uninstalling ViPER4Arise™...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-v4a");
+endif;
+
+if
+  file_getprop("/tmp/aroma/viper.prop","selected.2") == "1"
+then
+  package_extract_dir("modules/profiles", "/tmp/profiles");
+  ui_print(" ");
+  ui_print("Adding ViPER4Arise™ profiles...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/profiles");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.1") == "1"
+then
+  package_extract_dir("modules/arkamys", "/tmp/arkamys");
+  ui_print(" ");
+  ui_print("Installing Arkamys™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/arkamys");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.1") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Arkamys™...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-arkamys");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.2") == "1"
+then
+  package_extract_dir("modules/ddplus", "/tmp/ddplus");
+  package_extract_dir("modules/custom", "/tmp/custom");
+  ui_print(" ");
+  ui_print("Installing Dolby Digital Plus™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/ddplus");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.2") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Dolby Digital Plus™...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-ddplus");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.3") == "1"
+then
+  package_extract_dir("modules/am3d", "/tmp/am3d");
+  ui_print(" ");
+  ui_print("Installing AM3D ZIRENE® module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/am3d");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.3") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling AM3D ZIRENE®...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-am3d");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.4") == "1"
+then
+  package_extract_dir("modules/sony", "/tmp/sony");
+  ui_print(" ");
+  ui_print("Installing Sony™ Xperia Suite module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/sony");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.4") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Sony™ Xperia Suite...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-sony");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.5") == "1"
+then
+  package_extract_dir("modules/ICE/ICEsound", "/tmp/ICEsound");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/ice");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.5") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling ICEsound™ module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-ice");
+  ui_print(" ");
+  ui_print("Deleting ICEsound™ Configuration...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice0");
+  ui_print(" ");
+  ui_print("Deleting ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/none");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.6") == "1"
+then
+  package_extract_dir("modules/v4a_xhifi", "/tmp/v4a_xhifi");
+  ui_print(" ");
+  ui_print("Installing ViPER4Android XHiFi module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/v4a_xhifi");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.6") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling ViPER4Android XHiFi module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-v4a_xhifi");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.7") == "1"
+then
+  package_extract_dir("modules/esira", "/tmp/esira");
+  ui_print(" ");
+  ui_print("Installing Esira™ Media Player module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/esira");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.7") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling Esira™ Media Player...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-esira");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.8") == "1"
+then
+  package_extract_dir("modules/smeejaytee", "/tmp/smeejaytee");
+  ui_print(" ");
+  ui_print("You're going to feel a little pressure...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/toolbox");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.8") == "2"
+then
+  package_extract_dir("modules/core", "/tmp/core");
+  package_extract_dir("modules/custom", "/tmp/custom");
+  ui_print(" ");
+  ui_print("Thank you for trying smeejaytee's ToolBox™!");
+  ui_print("Easing off the pressure, just a bit...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-toolbox");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.9") == "1"
+then
+  package_extract_dir("modules/musicfx", "/tmp/musicfx");
+  ui_print(" ");
+  ui_print("Installing MusicFX module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/musicfx");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.9") == "1"
+then
+  ui_print(" ");
+  ui_print("Uninstalling MusicFX...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-musicfx");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.5") == "1"
+then
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "1"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing default ICEsound™ Configuration module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice1");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "2"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 2 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "3"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 3 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice3");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "4"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 4 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice4");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "5"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 5 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice5");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "6"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 6 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice6");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "1"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEEPBASS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/deepbass");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "2"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEFAULT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/default");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "3"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing KRAZY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/krazy");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "4"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MOVIE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/movie");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "5"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MUSIC2 ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/music2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "6"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing OUTDOORS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/outdoors");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "7"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pure");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "8"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing WIDECLARITY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/wideclarity");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "9"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing HOLYSHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/holyshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "10"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURESHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pureshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "11"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing BATHSALTS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/bathsalts");
+endif;
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.10") == "1"
+then
+  ui_print(" ");
+  ui_print("Removing deep_buffer...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/deep_buffer");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.2.10") == "1"
+then
+  ui_print(" ");
+  ui_print("Restoring deep_buffer...");
+  ui_print(" ");
+  run_program("/tmp/scripts/uninstall/x-deep_buffer");
+endif;
+
+if
+  file_getprop("/tmp/aroma/modules.prop","item.1.11") == "1"
+then
+  package_extract_file("custom/su.d/permissive", "/tmp/permissive");
+  ui_print(" ");
+  ui_print("Installing Permissive SELinux module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/permissive");
+endif;
+endif;
+
+if
+  file_getprop("/tmp/aroma/core2.prop","selected.0") == "3"
+then
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "1"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing default ICEsound™ Configuration module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice1");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "2"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 2 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "3"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 3 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice3");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "4"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 4 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice4");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "5"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 5 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice5");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "6"
+then
+  package_extract_dir("modules/ICE/ICEconfig", "/tmp/ICEconfig");
+  ui_print(" ");
+  ui_print("Installing ICEsound™ Configuration 6 module...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice6");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.1") == "7"
+then
+  ui_print(" ");
+  ui_print("Deleting ICEsound™ Configuration...");
+  ui_print(" ");
+  run_program("/tmp/scripts/config/ice0");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "1"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEEPBASS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/deepbass");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "2"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing DEFAULT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/default");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "3"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing KRAZY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/krazy");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "4"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MOVIE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/movie");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "5"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing MUSIC2 ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/music2");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "6"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing OUTDOORS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/outdoors");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "7"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURE ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pure");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "8"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing WIDECLARITY ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/wideclarity");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "9"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing HOLYSHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/holyshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "10"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing PURESHIT ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/pureshit");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "11"
+then
+  package_extract_dir("modules/ICE/ICEpreset", "/tmp/ICEpreset");
+  ui_print(" ");
+  ui_print("Installing BATHSALTS ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/bathsalts");
+endif;
+
+if
+  file_getprop("/tmp/aroma/ICEconfiguration.prop","selected.2") == "12"
+then
+  ui_print(" ");
+  ui_print("Deleting ICEsound™ Preset...");
+  ui_print(" ");
+  run_program("/tmp/scripts/preset/none");
+endif;
+endif;
+
+if
+  file_getprop("/tmp/aroma/core2.prop","selected.0") == "4"
+then
+  ui_print(" ");
+  ui_print("Repairing permissions...");
+  ui_print("Please allow up to 3 minutes as this process takes some time.");
+  ui_print(" ");
+  run_program("/tmp/scripts/install/permissions");
+endif;
+endif;
+
+run_program("/sbin/busybox", "umount", "/system");
+
+set_progress(1.34);

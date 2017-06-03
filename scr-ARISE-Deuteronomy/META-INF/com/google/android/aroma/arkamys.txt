@@ -1,0 +1,7 @@
+<b>Arkamys™ Audio</b>
+
+
+* Arkamys™ is the team behind Arkamys™ Audio found in mobile firmware and many automobiles.
+
+
+* This module is sourced from the latest ZTE™ Blade 7 mobile firmware.

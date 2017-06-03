@@ -1,0 +1,25 @@
+<b>Dolby Atmos™</b>
+
+
+* Dolby Atmos™ is one of the most popular and satisfying DSP apps and sound effect for Android's operating system.
+
+
+* Much shorter learning curve than ViPER4Android, only taking a minute or two to find an optimum setting using its equalizer and its three effect boosts/scoops.
+
+
+* Provides the most cinematic experiences for video playback, especially feature films and live musical performances.
+
+
+* Two separate ports of Dolby Atmos™ are available to provide maximum compatibility:
+
+
+  - The Dolby Atmos™ ported by ahrion @XDA Developers and elite ARISE team member is from the latest, official LeEco™ LeMax 3 Pro firmware and will install on Marshmallow and Nougat operating systems.
+
+
+  - The Dolby Atmos™ ported by worstenbrood @XDA Developers is from Lenovo A7000 official firmware and will install on JellyBean, KitKat, and Lollipop operating systems.
+
+
+!! Note !!
+
+
+* Devices on Marshmallow or Nougat will have forced Permissive Mode for SElinux to allow full Dolby Atmos™ functionality.

@@ -1,0 +1,115 @@
+#!/sbin/sh
+#
+# ARISE Sound Systems™ @XDA Developers
+#
+# Deuteronomy™ Sony™ Music Suite Uninstall AROMA module
+#
+# www.arisesound.com
+
+OUTFD=/proc/self/fd/$2;
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+APP=$SYS/app
+ETC=$SYS/etc
+LIB=$SYS/lib
+LIB64=$SYS/lib64
+PAPP=$SYS/priv-app
+SUD=$SYS/su.d
+DLNA=dlna-somc-xxhdpi-release
+DLNAPK=dlna-somc-xxhdpi-release.apk
+LYRIC=GoogleLyricsPlugin
+LYRICAPK=GoogleLyricsPlugin.apk
+MUSIC=SemcMusic
+MUSICAPK=SemcMusic.apk
+POD=SomcPodcast
+PODAPK=SomcPodcast.apk
+TRKID=TrackID
+TRKIDAPK=TrackID.apk
+UNHSNTF=UnsupportedHeadsetNotifier
+UNHSNTFAPK=UnsupportedHeadsetNotifier.apk
+WIKI=WikipediaPlugin
+WIKIAPK=WikipediaPlugin.apk
+KARAOKE=YouTubeKaraokePlugin
+KARAOKEAPK=YouTubeKaraokePlugin.apk
+SOUND=SoundEnhancement
+SOUNDAPK=SoundEnhancement.apk
+YTUBE=YouTubePlugin
+YTUBEAPK=YouTubePlugin.apk
+LDAC=libldacBT_enc.so
+DSEE=libsonydseehxwrapper.so
+DSX=dsx_param_file.bin
+
+rm -rf $APP/$DLNA
+rm -rf $APP/$KARAOKE
+rm -rf $APP/$LYRIC
+rm -rf $APP/$SOUND
+rm -rf $APP/$UNHSNTF
+rm -rf $APP/$WIKI
+rm -rf $APP/$YTUBE
+rm -rf $PAPP/$MUSIC
+rm -rf $PAPP/$POD
+rm -rf $PAPP/$TRKID
+rm -rf $ETC/sony_effect
+rm -f $ETC/$DSX
+rm -f $ETC/media_codecs_somc.xml
+rm -f $APP/$DLNAPK
+rm -f $APP/$KARAOKEAPK
+rm -f $APP/$LYRICAPK
+rm -f $APP/$MUSICAPK
+rm -f $APP/$PODAPK
+rm -f $APP/$SOUNDAPK
+rm -f $APP/$TRKIDAPK
+rm -f $APP/$UNHSNTF
+rm -f $APP/$WIKIAPK
+rm -f $APP/$YTUBEAPK
+rm -f $LIB/$DSEE
+rm -f $LIB/libdlnacommonjni.so
+rm -f $LIB/libdlnaplayer.so
+rm -f $LIB/$LDAC
+rm -f $LIB/libhscomp.so
+rm -f $LIB/libhscomp_jni.so
+rm -f $LIB/libhuey.so
+rm -f $LIB/libhuey_dms_plugin.so
+rm -f $LIB/libprotobuf-cpp-2.3.0-lite.so
+rm -f $LIB/libsomcavextensionsimpl.so
+rm -f $LIB/libsomcmediahttp.so
+rm -f $LIB64/$DSEE
+rm -f $LIB64/libdlnacommonjni.so
+rm -f $LIB64/libdlnaplayer.so
+rm -f $LIB64/libhscomp.so
+rm -f $LIB64/libhscomp_jni.so
+rm -f $LIB64/libhuey.so
+rm -f $LIB64/libhuey_dms_plugin.so
+rm -f $LIB64/libprotobuf-cpp-2.3.0-lite.so
+rm -f $LIB64/libsomcavextensionsimpl.so
+rm -f $LIB64/libsomcmediahttp.so
+rm -f $SUD/sony_setprop
+
+exit 0

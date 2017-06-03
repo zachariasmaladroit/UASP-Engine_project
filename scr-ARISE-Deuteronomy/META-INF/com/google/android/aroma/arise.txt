@@ -1,0 +1,56 @@
+<b>Welcome to the ARISE™ landing page for our AROMA Modular Installer!</b>
+
+
+* The AROMA Installer allows our sound system to be installed on a modular level and we are very excited to bring this method of installation to our users!
+
+
+* Beginning with a clean system, the user can install the core system and then add or skip the following modules to create one of hundreds of possible sound systems:
+
+
+  <b>- ViPER4Arise™ 2.5.0.5</b>
+
+  <b>- ViPER4Arise™ 2.3.4.0 with Super Quality Driver</b>
+
+  <b>- ViPER4Arise™ Profiles</b>
+
+  <b>- Arkamys™ Audio</b>
+
+  <b>- Dolby Atmos™</b>
+
+  <b>- Dolby Digital Plus™</b>
+
+  <b>- Sony™ Xperia Music Suite</b>
+
+  <b>- ICEsound™</b>
+
+  <b>- ICEsound™ Configuration</b>
+
+  <b>- ICEsound™ Preset</b>
+
+  <b>- Esira™ Media Player</b>
+
+  <b>- "Feel the Beats™" ToolBox by smeejaytee</b>
+
+  <b>- ViPER4Android XHiFi</b>
+
+  <b>- MusicFX</b>
+
+  <b>- deep_buffer removal</b>
+
+  <b>- SELinux Permissive Mode</b>
+
+  <b>- SDCard permissions repair by osm0sis</b>
+
+
+* Afterwards, this modular installer can be used to change the installed sound system by installing or uninstalling all of the modules above by selecting the second option in the first step.
+
+
+* If you wish to abort the installation at any time, simply press the circle at the bottom of the installer and choose abort.
+
+
+* We at ARISE™ are confident that this modular intallation method will provide the greatest and easiest sound system installation ever made available.
+
+
+* We at ARISE™ want to personally thank you for your interest in our project and urge you to seek us and our awesome community @XDA Developers for any help, assistance, information, or just to hang out!
+
+:good:

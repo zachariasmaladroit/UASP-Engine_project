@@ -1,0 +1,71 @@
+#!/sbin/sh
+# sdcard Fix Permissions: Recovery Flashable Zip
+# osm0sis @ xda-developers
+
+OUTFD=/proc/self/fd/$2
+
+ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+SLOT=$(for i in $(cat /proc/cmdline); do echo $i | grep slot | dd bs=1 skip=24 2>/dev/null; done)
+if [ $SLOT != "" ]; then
+    echo "slotnum=$SLOT" > /tmp/slotsel
+elif [ $(cat /etc/recovery.fstab 2>/dev/null | grep boot_a) != "" ]; then
+    echo "slotnum=_a" > /tmp/slotsel
+else
+    echo "none" > /tmp/slotsel
+fi
+
+safe_mount() {
+	IS_MOUNTED=$(cat /proc/mounts | grep "$1")
+	if [ "$IS_MOUNTED" ]; then
+  mount -o rw,remount $1
+ else
+  mount $1
+	fi
+}
+
+safe_mount /system
+safe_mount /data
+
+if [ -d "/system/system" ]; then
+  SYS=/system/system
+else
+  SYS=/system
+fi
+
+if [ -d "$SYS/lib64" ]; then
+  LIB=$SYS/lib64
+else
+  LIB=$SYS/lib
+fi
+
+set_perm() {
+  uid=$1; gid=$2; mod=$3;
+  shift 3;
+  chown $uid.$gid $*; chown $uid:$gid $*;
+  chmod $mod $*;
+}
+
+set_perm_recursive() {
+  uid=$1; gid=$2; dmod=$3; fmod=$4;
+  shift 4;
+  until [ ! "$1" ]; do
+    chown -R $uid.$gid $1; chown -R $uid:$gid $1;
+    find "$1" -type d -exec chmod $dmod {} +;
+    find "$1" -type f -exec chmod $fmod {} +;
+    shift;
+  done;
+}
+
+restore_con() { 
+  for i in $SYS/bin/toybox $SYS/toolbox $SYS/bin/toolbox; do
+    LD_LIBRARY_PATH=$LIB $i restorecon -R $*
+  done
+  restorecon -R $*
+}
+
+set_perm_recursive 1023 1023 0775 0664 "/data/media"
+set_perm 1023 1023 0770 "/data/media" "/data/media/0"
+restore_con /data/media/0
+
+exit 0

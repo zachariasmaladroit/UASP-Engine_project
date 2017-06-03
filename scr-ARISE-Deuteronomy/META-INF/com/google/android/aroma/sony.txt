@@ -1,0 +1,25 @@
+<b>Sony™ Music Suite</b>
+
+
+* The most complete and up-to-date Sony™ Music Suite available anywhere.
+
+
+* <b>Sony™ Music 9.3.4.A.1.1</b>
+
+* <b>SoundEnhancement</b>
+
+* <b>All available Sony™ Music plugins</b>
+
+* <b>Home Network/DLNA functionality</b>
+
+* <b>Podcast</b>
+
+* <b>TrackID</b>
+
+
+<b>!! Note !!</b>
+
+
+* MusicFX will be installed if not already present. This add-on requires the following steps to be performed:
+
+  <b>Android Settings > Apps > Menu > Show System > MusicFX > Disable > Reboot device</b> 
