@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+
+Name: META-INF/com/google/android/update-binary
+SHA1-Digest: RaRvMYn30/RDYVnmoFgrnLiUX1k=
+
+Name: META-INF/com/google/android/updater-script
+SHA1-Digest: tAxv9cC5upx06vEaKHMUEkyHXO0=
+
+Name: lib/libMA3-wavesfx-Coretex_A9.so
+SHA1-Digest: StzJoQqoBCeBZ4JIJGUmE8ZuVvQ=
+
+Name: lib/libMA3-processcode-Coretex_A9.so
+SHA1-Digest: D9fkyh9/yFcaq/N05vhZp/wrtIE=
+
+Name: app/MaxxAudio/lib/arm/libwavesfxservice.so
+SHA1-Digest: iQ9q35nFggCejX23mqCSI0jEYW4=
+
+Name: app/MaxxAudio/lib/arm/libEQGraphLib.so
+SHA1-Digest: T5WCA1HLPzg/3ueG80CNjEUXNNM=
+
+Name: app/MaxxAudio/lib/arm/libosl-maxxaudio-itf.so
+SHA1-Digest: jhxWW26fBn4xEmaB2CRD8/sUPLU=
+
+Name: lib/soundfx/libmaxxeffect-cembedded.so
+SHA1-Digest: ULxgbyVI3nFjHI37JUWzIVQxsIs=
+
+Name: app/MaxxAudio/MaxxAudio.apk
+SHA1-Digest: eFyZPaboheXTHpFkuEQocDg7NHw=
+
